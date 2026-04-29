@@ -1,0 +1,24 @@
+# Python-generated files
+__pycache__/
+.pytest_cache/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+.DS_Store
+
+# default local manifests directory
+manifests/
+
+# Skill install destinations — populated by `nul skills add`,
+# not source-of-truth (the marketplace is). Each install stamps a
+# revision-pinned manifest, which would generate noisy diffs.
+.agents/
+.claude/skills/
+
+htmlcov/
+.vscode/
