@@ -4,7 +4,7 @@ Northwestern University Libraries command-line tooling.
 
 `nul` installs AI-assistant skills for Northwestern University Libraries workflows. It reads the
 [NUL community catalog](https://github.com/nulib-labs/nul-skills) — a Claude
-Code plugin marketplace — and writes each plugin's SKILL.md files into the
+Code plugin marketplace — and writes each plugin's skill folders into the
 agent skill directories used by Codex, ChatGPT, Cursor, and similar tools.
 
 Two install paths from one source of truth:
@@ -20,6 +20,9 @@ command tree.
 
 ## Installation
 
+Requires Python 3.14 or newer. Development uses Python 3.15.2, pinned in
+`.python-version`; `uv` downloads it when needed.
+
 Installation via `uv`:
 
 ```bash
@@ -31,13 +34,6 @@ Run without installing:
 
 ```bash
 uvx --from nul-cli nul --help
-```
-
-Installation via `pip`:
-
-```bash
-pip install nul-cli
-nul --help
 ```
 
 ## Usage
@@ -94,19 +90,21 @@ nul skills upgrade
 The catalog is fetched from `nulib-labs/nul-skills` (branch `main`). Each
 install records the resolved commit SHA in `.nul-skill-manifest.json`, and
 `upgrade` re-resolves to detect new commits touching that plugin's path.
+This is independent of Claude Code's plugin version, which must be bumped for
+Claude users to receive a new release.
 
 > **Naming note.** The catalog file is `.claude-plugin/marketplace.json` and
 > each entry is a *plugin* with its own
-> [`.claude-plugin/plugin.json`](https://docs.claude.com/en/docs/claude-code/plugins-reference)
+> [`.claude-plugin/plugin.json`](https://code.claude.com/docs/en/plugins-reference)
 > manifest. These are
-> [Claude Code plugin marketplace](https://docs.claude.com/en/docs/claude-code/plugin-marketplaces)
+> [Claude Code plugin marketplace](https://code.claude.com/docs/en/plugin-marketplaces)
 > conventions, kept verbatim so the same `nul-skills` repo can be added as a
 > Claude plugin source. We use "community" as the user-facing term throughout
 > the CLI.
 >
 > Plugins may also bundle commands, hooks, or MCP servers for Claude Code.
-> `nul-cli` ignores those and only installs SKILL.md files — non-Claude
-> clients will use those skills via their own agent skill discovery.
+> `nul-cli` ignores those and only installs skill folders, including their supporting
+> files. Non-Claude clients use those skills via their own agent skill discovery.
 
 Override via env vars:
 
@@ -119,8 +117,10 @@ Override via env vars:
 
 ## Development
 
+Refresh dependencies with `uv lock --upgrade`, then run the tests.
+
 ```bash
-uv sync
+uv sync --locked
 uv run nul --help
 uv run nul skills add --help
 ```

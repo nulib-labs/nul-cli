@@ -2,11 +2,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Callable, TypeVar
+from typing import Callable, TypeVar, dataclass_transform
 
-from typing_extensions import TypeAlias, dataclass_transform
-
-PathLike: TypeAlias = str | Path
+type PathLike = str | Path
 
 _T = TypeVar("_T")
 

@@ -13,8 +13,10 @@ from dataclasses import asdict
 from pathlib import Path
 from typing import Iterable
 
-from click import Command, Context, Group
 from tqdm import tqdm
+from typer import Context
+from typer.core import TyperCommand as Command
+from typer.core import TyperGroup as Group
 from typer.main import get_command
 
 from .errors import CLIError
@@ -452,7 +454,7 @@ _COMMON_FLAG_ALLOWLIST = {"--claude", "--global", "--force", "--dest"}
 _INLINE_FLAG_EXCLUDE: set[str] = set()
 _COMMON_FLAG_HELP_OVERRIDES: dict[str, str] = {
     "--global": "Install into user-level location (`~/.agents/skills`) instead of project-local.",
-    "--claude": "Also wire skills into Claude legacy directory (`.claude/skills` or `~/.claude/skills`).",
+    "--claude": "Also wire skills into Claude skills directory (`.claude/skills` or `~/.claude/skills`).",
     "--dest": "Install or upgrade skills in a custom destination directory.",
     "--force": "Overwrite existing installed skill content in the target location.",
 }
@@ -461,16 +463,16 @@ _COMMON_FLAG_HELP_OVERRIDES: dict[str, str] = {
 def _format_params(cmd: Command) -> str:
     parts: list[str] = []
     for p in cmd.params:
-        if not p.required or p.human_readable_name == "--help":
+        if not p.required or p.name == "help":
             continue
         if p.name and p.name.startswith("_"):
             continue
         long_name = next((o for o in getattr(p, "opts", []) if o.startswith("--")), None)
         if long_name is not None:
-            type_name = getattr(p.type, "name", "").upper() or "VALUE"
+            type_name = p.bare_type().upper() or "VALUE"
             parts.append(f"{long_name} {type_name}")
         elif p.name:
-            parts.append(p.human_readable_name)
+            parts.append(p.display_name_raw)
     return " ".join(parts)
 
 
@@ -491,7 +493,7 @@ def _collect_leaf_commands(group: Group, ctx: Context, path_parts: list[str]) ->
 
 def _iter_optional_params(cmd: Command):
     for p in cmd.params:
-        if p.required or p.human_readable_name == "--help":
+        if p.required or p.name == "help":
             continue
         if p.name and p.name.startswith("_"):
             continue
@@ -514,7 +516,7 @@ def _get_flag_names(cmd: Command, *, exclude: set[str] | None = None) -> list[st
         if getattr(p, "is_flag", False):
             flags.append(long_name)
         else:
-            type_name = getattr(p.type, "name", "").upper() or "VALUE"
+            type_name = p.bare_type().upper() or "VALUE"
             flags.append(f"{long_name} {type_name}")
     return flags
 

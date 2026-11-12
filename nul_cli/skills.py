@@ -115,7 +115,7 @@ def skills_add(
 
     Default location is the current directory (`.agents/skills`) or user-level
     (`~/.agents/skills`). With `--claude`, installed skills are also symlinked into
-    Claude's legacy skills directory. Plugins with multiple skills install each one
+    Claude's skills directory. Plugins with multiple skills install each one
     as a separate `.agents/skills/<plugin>-<skill>/` directory unless you scope
     with `<plugin>:<skill>`.
 

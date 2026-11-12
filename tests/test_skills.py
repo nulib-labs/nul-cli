@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from importlib.metadata import version
 from pathlib import Path
 
 import pytest
@@ -127,6 +128,10 @@ def test_install_nul_cli_skill_writes_dynamic_md(tmp_path: Path) -> None:
 
     skill_md = (target / "SKILL.md").read_text(encoding="utf-8")
     assert skill_md.startswith("---\nname: nul-cli\n")
+    assert f"Generated with `nul-cli v{version('nul-cli')}`" in skill_md
+    for command in ("list", "preview", "add", "upgrade"):
+        assert f"- `nul skills {command}`" in skill_md
+    assert "--dest PATH" in skill_md
     assert manifest["name"] == "nul-cli"
     assert manifest["plugin"] == "nul-cli"
-    assert manifest["revision"].startswith("nul-cli@")
+    assert manifest["revision"] == f"nul-cli@{version('nul-cli')}"
